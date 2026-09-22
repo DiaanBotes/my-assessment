@@ -116,6 +116,13 @@ def question_5():
     Make use of the UPDATE function to amend/fix the following: Customers with a CreditScore between and including 600 to 650 must be classified as CustomerClass C.
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- BETWEEN is inclusive for both bounds, therefore it works with between and including 600 to 650
+
+    UPDATE credit
+    SET CustomerClass = 'C'
+    WHERE CreditScore BETWEEN 600 AND 650
+    """
 
     return qry
