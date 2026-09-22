@@ -23,7 +23,21 @@ def question_1():
     Return the `Name`, `Surname` and `CustomerID`
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- Identifies customers whose CustomerID appears more than once. The subquery groups by CustomerID and only keeps IDs with more than one row
+    -- DISTINCT is used to exclude duplicate rows and only return duplicated customers once. Results are then sorted by CustomerID
+    
+    SELECT DISTINCT Name, Surname, CustomerID
+    FROM customers
+    WHERE CustomerID IN (
+        SELECT CustomerID
+        FROM customers
+        GROUP BY CustomerID
+        HAVING COUNT(*) > 1
+    )
+    ORDER BY CustomerID
+    """
 
     return qry
 
