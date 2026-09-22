@@ -68,7 +68,22 @@ def question_3():
     There is only 1 loan per customer ID.
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- There are 14 duplicate records, since there are one loan per customer duplicates are removed before calculating so no loan is counted twice
+    -- The CASE WHEN counts approved loans which is then divided by the total number of loans
+
+    SELECT 
+        LoanTerm,  
+        (SUM(CASE WHEN ApprovalStatus = 'Approved' THEN 1 ELSE 0 END) / COUNT(*)) * 100 AS Percentage
+    FROM (
+        SELECT DISTINCT *
+        FROM loans
+    ) AS unique_loans
+    GROUP BY LoanTerm 
+    ORDER BY LoanTerm
+    
+    """
 
     return qry
 
