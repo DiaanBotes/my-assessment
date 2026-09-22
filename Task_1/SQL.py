@@ -94,7 +94,19 @@ def question_4():
     Return columns `CustomerClass` and `Count`
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- Count the customers per CustomerClass, the duplicates are removed in the subclass, same as in the previous question. 
+
+    SELECT CustomerClass, COUNT(*) AS Count
+    FROM (
+        SELECT DISTINCT *
+        FROM credit
+    ) AS unique_Customers
+    GROUP BY CustomerClass
+    ORDER BY CustomerClass    
+
+    """
 
     return qry
 
