@@ -47,7 +47,16 @@ def question_2():
     Return the `Name`, `Surname` and `Income` of all female customers in the dataset in descending order of income
     """
 
-    qry = """____________________"""
+    qry = """
+    
+    -- Filtering to female customers. LOWER and LIKE 'fem%' gaurd against inconsistencies in the column
+    -- Distinct removes duplicate customers 
+    
+    SELECT DISTINCT Name, Surname, Income
+    FROM customers
+    WHERE LOWER(Gender) LIKE 'fem%'
+    ORDER BY Income DESC
+    """
 
     return qry
 
