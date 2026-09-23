@@ -22,7 +22,25 @@ def question_1():
     Make use of a JOIN to find the `AverageIncome` per `CustomerClass`
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- Calculates avg income per CustomerClass, both of the tables have 14 exact duplicates and joining them would double that
+    -- Therefore a CTE (common table expression) is used to remove the duplicates in each table before the join
+
+    WITH unique_customers AS (
+        SELECT DISTINCT * FROM customers
+    ),
+    unique_credit AS (
+        SELECT DISTINCT * FROM credit
+    )
+
+    SELECT AVG(c.Income) AS AverageIncome, cr.CustomerClass
+    FROM unique_customers AS c
+    JOIN unique_credit AS cr ON c.CustomerID = cr.CustomerID
+    GROUP BY cr.CustomerClass
+    ORDER BY cr.CustomerClass
+    
+    """
 
     return qry
 
