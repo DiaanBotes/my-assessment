@@ -97,7 +97,42 @@ def question_3():
     Do not return the new table, just create it.
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- Chose these data types since they match the columns in tables customers, loans and credit
+    -- Removing all of the duplicate rows with 3 CTE's after the Insert but before Select
+    -- Uses 3 joins to join all 3 tables on CustomerID together
+
+    CREATE TABLE financing (
+        CustomerID INT,
+        Income INT,
+        LoanAmount INT,
+        LoanTerm INT,
+        InterestRate FLOAT,
+        ApprovalStatus VARCHAR,
+        CreditScore INT
+    );
+
+    INSERT INTO financing
+        (CustomerID, Income, LoanAmount, LoanTerm, InterestRate, ApprovalStatus, CreditScore)
+
+    WITH unique_customers AS (
+        SELECT DISTINCT * FROM customers
+    ),
+    unique_loans AS (
+        SELECT DISTINCT * FROM loans
+    ),
+    unique_credit AS (
+        SELECT DISTINCT * FROM credit
+    )
+
+    SELECT
+        c.CustomerID, c.Income, l.LoanAmount, l.LoanTerm, l.InterestRate, l.ApprovalStatus, cr.CreditScore
+    FROM unique_customers AS c
+    JOIN unique_loans AS l ON c.CustomerID = l.CustomerID
+    JOIN unique_credit AS cr ON c.CustomerID = cr.CustomerID
+
+    """
 
     return qry
 
