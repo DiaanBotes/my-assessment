@@ -51,7 +51,40 @@ def question_2():
     Ensure consistent use of either the abbreviated or full version of each province, matching the format found in the customer table.
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- Counting rejected loan applications per province
+    -- There are two formats inside of the Region column, abbreviations and full names.
+    --  Abbreviations are more dominant, therefore full names are mapped to abbreviations through CASE WHEN
+    -- All duplications are removed first in CTE'S 
+
+    WITH unique_customers AS (
+        SELECT DISTINCT * FROM customers
+    ),
+    unique_loans AS (
+        SELECT DISTINCT * FROM loans
+    )
+
+    SELECT CASE
+            WHEN Region = 'EasternCape' THEN 'EC'
+            WHEN Region = 'FreeState' THEN 'FS'
+            WHEN Region = 'WesternCape' THEN 'WC'
+            WHEN Region = 'KwaZulu-Natal' THEN 'KZN'
+            WHEN Region = 'NorthWest' THEN 'NW'
+            WHEN Region = 'Gauteng' THEN 'GT'
+            WHEN Region = 'NorthernCape' THEN 'NC'
+            WHEN Region = 'Mpumalanga' THEN 'MP'
+            WHEN Region = 'Limpopo' THEN 'LP'
+            ELSE Region 
+        END AS Province,
+        COUNT (*) AS RejectedApplications
+    FROM unique_customers AS c
+    JOIN unique_loans AS l ON c.CustomerID = l.CustomerID
+    WHERE l.ApprovalStatus = 'Rejected'
+    GROUP BY Province
+    ORDER BY Province
+
+    """
 
     return qry
 
