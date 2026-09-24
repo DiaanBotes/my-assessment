@@ -153,9 +153,21 @@ def question_3(df_balances):
         float: The anualized CPR of the loan portfolio as a percent.
 
     """
+    # Unscheduled principal is any amount paid above the scheduled instalment, which reduces the loan balance faster than the repayment schedule requires.
+    # Shortfalls are clipped to zero, since those aren't prepayments.
+    unscheduled_principal = (df_balances["ActualRepayment"] - df_balances["ScheduledRepayment"]).clip(lower=0)
+
+    # SMM is calculated at portfolio level rather than per loan. The monthly
+    # totals are summed before dividing, such that each loan is weighted by its size
+    monthly_unscheduled = unscheduled_principal.groupby(df_balances["Month"]).sum()
+    monthly_start_balance = df_balances.groupby("Month")["LoanBalanceStart"].sum()
+    monthly_smm = monthly_unscheduled / monthly_start_balance
+
+    smm_mean = (1 + monthly_smm).prod() ** (1 / 12) - 1
+
+    cpr_percent = float((1 - (1 - smm_mean) ** 12) * 100)
 
     return cpr_percent
-
 
 def question_4(df_balances):
     """
