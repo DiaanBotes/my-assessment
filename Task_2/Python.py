@@ -103,6 +103,13 @@ def question_1(df_balances):
 
     """
 
+    # Flag each month where the actual repayment was less than the scheduled repayment
+    # A single month is enough to collapse to the default, therefore .any() is used to check
+    # The mean gives the proportion of loans that defaulted
+
+    short_fall_months = df_balances["ActualRepayment"] < df_balances["ScheduledRepayment"]
+    default_rate_percent = float(short_fall_months.groupby(df_balances["LoanID"]).any().mean() * 100)
+
     return default_rate_percent
 
 
