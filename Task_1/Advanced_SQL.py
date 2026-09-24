@@ -235,7 +235,42 @@ def question_5():
     Hint: there should be 1x CustomerID = 1
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- For each month, SUM is applied to a CASE expression that returns the value only for that month and 0 for all others
+    -- The repayment count columns are cast to INT
+
+    SELECT 
+        CustomerID,
+        SUM(CASE WHEN MonthName = 'January' THEN NumberOfRepayments ELSE 0 END)::INT AS JanuaryRepayments,
+        SUM(CASE WHEN MonthName = 'January' THEN AmountTotal ELSE 0 END)::INT AS JanuaryTotal,
+        SUM(CASE WHEN MonthName = 'February' THEN NumberOfRepayments ELSE 0 END)::INT AS FebruaryRepayments,
+        SUM(CASE WHEN MonthName = 'February' THEN AmountTotal ELSE 0 END)::INT AS FebruaryTotal,
+        SUM(CASE WHEN MonthName = 'March' THEN NumberOfRepayments ELSE 0 END)::INT AS MarchRepayments,
+        SUM(CASE WHEN MonthName = 'March' THEN AmountTotal ELSE 0 END)::INT AS MarchTotal,
+        SUM(CASE WHEN MonthName = 'April' THEN NumberOfRepayments ELSE 0 END)::INT AS AprilRepayments,
+        SUM(CASE WHEN MonthName = 'April' THEN AmountTotal ELSE 0 END)::INT AS AprilTotal,
+        SUM(CASE WHEN MonthName = 'May' THEN NumberOfRepayments ELSE 0 END)::INT AS MayRepayments,
+        SUM(CASE WHEN MonthName = 'May' THEN AmountTotal ELSE 0 END)::INT AS MayTotal,
+        SUM(CASE WHEN MonthName = 'June' THEN NumberOfRepayments ELSE 0 END)::INT AS JuneRepayments,
+        SUM(CASE WHEN MonthName = 'June' THEN AmountTotal ELSE 0 END)::INT AS JuneTotal,
+        SUM(CASE WHEN MonthName = 'July' THEN NumberOfRepayments ELSE 0 END)::INT AS JulyRepayments,
+        SUM(CASE WHEN MonthName = 'July' THEN AmountTotal ELSE 0 END)::INT AS JulyTotal,
+        SUM(CASE WHEN MonthName = 'August' THEN NumberOfRepayments ELSE 0 END)::INT AS AugustRepayments,
+        SUM(CASE WHEN MonthName = 'August' THEN AmountTotal ELSE 0 END)::INT AS AugustTotal,
+        SUM(CASE WHEN MonthName = 'September' THEN NumberOfRepayments ELSE 0 END)::INT AS SeptemberRepayments,
+        SUM(CASE WHEN MonthName = 'September' THEN AmountTotal ELSE 0 END)::INT AS SeptemberTotal,
+        SUM(CASE WHEN MonthName = 'October' THEN NumberOfRepayments ELSE 0 END)::INT AS OctoberRepayments,
+        SUM(CASE WHEN MonthName = 'October' THEN AmountTotal ELSE 0 END)::INT AS OctoberTotal,
+        SUM(CASE WHEN MonthName = 'November' THEN NumberOfRepayments ELSE 0 END)::INT AS NovemberRepayments,
+        SUM(CASE WHEN MonthName = 'November' THEN AmountTotal ELSE 0 END)::INT AS NovemberTotal,
+        SUM(CASE WHEN MonthName = 'December' THEN NumberOfRepayments ELSE 0 END)::INT AS DecemberRepayments,
+        SUM(CASE WHEN MonthName = 'December' THEN AmountTotal ELSE 0 END)::INT AS DecemberTotal
+    FROM timeline
+    GROUP BY CustomerID
+    ORDER BY CustomerID
+
+    """
 
     return qry
 
