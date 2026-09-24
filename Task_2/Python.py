@@ -126,6 +126,16 @@ def question_2(df_scheduled, df_balances):
 
     """
 
+    # ScheduledRepayment is constant, so the expected total is the montly instalment * by 12
+    # LoanID is set as the index such that this Series aligns with the grouped actuals by loan
+    expected_total_payments = df_scheduled.set_index("LoanID")["ScheduledRepayment"] * 12
+    actual_total_payments = df_balances.groupby("LoanID")["ActualRepayment"].sum()
+
+    unpaid_amount = expected_total_payments - actual_total_payments
+    unpaid_proportion = unpaid_amount / expected_total_payments
+
+    default_rate_percent = float((unpaid_proportion > 0.15).mean() * 100)
+
     return default_rate_percent
 
 
