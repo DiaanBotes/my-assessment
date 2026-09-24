@@ -150,7 +150,78 @@ def question_4():
     Hint: there should be 12x CustomerID = 1.
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- Regards to Timezone handling. RepaymentDate is stored without a timezone, with the local
+    -- zone located in the TimeZone column. Each timestamp is therefore
+    -- interpreted in its own zone and converted to Europe/London before filtering.
+    -- IANA zone names are used such that daylight saving is applied correctly
+    -- The ICU extension is installed and loaded, it is required for named zones.
+    --
+    -- Assumptions: CST, IST and PNT are a bit ambiguous. They are read as
+    -- US Central, Israel Standard Time, and US Mountain
+    -- The time window, 06:00-18:00 is treated as inclusive of both.
+    --
+    -- Structure: repayments are aggregated per customer per month, then attached to
+    -- a grid of every customer and every month through a LEFT JOIN
+    -- Such that months with no repayments are showed and filled with 0 by COALESCE. 
+    -- Finally This produces 1000 customers x 12 months = 12,000 rows.
+
+    INSTALL icu; LOAD icu;
+
+    CREATE TABLE timeline (
+        CustomerID INT,
+        MonthName VARCHAR,
+        NumberOfRepayments INT,
+        AmountTotal INT
+    );
+
+    INSERT INTO timeline
+        (CustomerID, MonthName, NumberOfRepayments, AmountTotal)
+
+    WITH TimeZoneConversions AS (
+        SELECT
+            CustomerID,
+            Amount,
+            RepaymentDate
+                AT TIME ZONE CASE TimeZone
+                    WHEN 'GMT' THEN 'Europe/London'
+                    WHEN 'UTC' THEN 'UTC'
+                    WHEN 'CET' THEN 'Europe/Paris'
+                    WHEN 'EET' THEN 'Europe/Athens'
+                    WHEN 'JST' THEN 'Asia/Tokyo'
+                    WHEN 'PST' THEN 'America/Los_Angeles'
+                    WHEN 'CST' THEN 'America/Chicago'
+                    WHEN 'IST' THEN 'Asia/Jerusalem'
+                    WHEN 'PNT' THEN 'America/Phoenix'
+                    ELSE TimeZone
+                    END
+                AT TIME ZONE 'Europe/London' AS LondonTime
+        FROM repayments
+    ),
+    monthly_totals AS (
+        SELECT CustomerID, Month(LondonTime) AS MonthID, COUNT(*) AS NumberOfRepayments, SUM(Amount) AS AmountTotal
+        FROM TimeZoneConversions
+        WHERE LondonTime::TIME >= '06:00' AND LondonTime::TIME <= '18:00'
+        GROUP BY CustomerID, MonthID
+    ),
+    customers_months AS (
+        SELECT c.CustomerID, m.MonthID, m.MonthName
+        FROM (
+            SELECT DISTINCT *
+            FROM customers
+        )  AS c
+        CROSS JOIN months AS m
+    )
+    
+    SELECT cm.CustomerID, cm.MonthName, COALESCE(mt.NumberOfRepayments, 0) AS NumberOfRepayments, COALESCE(mt.AmountTotal, 0) AS AmountTotal
+    FROM customers_months AS cm
+    LEFT JOIN monthly_totals AS mt
+        ON cm.CustomerID = mt.CustomerID
+        AND cm.MonthID = mt.MonthID
+    ORDER BY cm.CustomerID, cm.MonthID
+
+    """
 
     return qry
 
