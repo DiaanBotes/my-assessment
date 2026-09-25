@@ -291,7 +291,39 @@ def question_6():
     Also return a result set for this table (ie SELECT * FROM corrected_customers)
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- With the misalignment, ages were shifted two places upwards within each table
+    -- LEAD(Age, 2) recovers it, partitioned by Gender since the male and female tables were shifted independently.
+    --
+    -- The last two customers per gender have no rows below them, so their values
+    -- are just added manually, wrapping to the first two ages of the same gender
+    -- (male 994 and 1000 from customers 7 and 8, female 998 and 999 from 1 and 2).
+    --
+    -- With Customers, the duplicates are removed first
+
+    CREATE TABLE corrected_customers AS
+    SELECT
+        CustomerID,
+        Age,
+        COALESCE(
+            LEAD(Age, 2) OVER (PARTITION BY Gender ORDER BY CustomerID),
+            CASE CustomerID
+                WHEN 994 THEN 21
+                WHEN 1000 THEN 64
+                WHEN 998 THEN 24
+                WHEN 999 THEN 34
+            END
+        ) AS CorrectedAge,
+        Gender
+    FROM (
+        SELECT DISTINCT * FROM customers
+    )
+    ORDER BY CustomerID;
+
+    SELECT * FROM corrected_customers;
+    
+    """
 
     return qry
 
