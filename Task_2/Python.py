@@ -169,6 +169,7 @@ def question_3(df_balances):
 
     return cpr_percent
 
+
 def question_4(df_balances):
     """
     Calculate the predicted total loss for the second year in the loan term.
@@ -184,5 +185,18 @@ def question_4(df_balances):
         float: The predicted total loss for the second year in the loan term.
 
     """
+
+    final_month = df_balances[df_balances["Month"] == 12]
+    total_loan_balance = final_month["LoanBalanceEnd"].sum()
+
+    # Type 2 is used as the probability of default. Type 1 triggers on a single missed payment
+    # So it overstates the loans likely to create an actual loss.
+    # question_2 is called, it needs df_scheduled, which is loaded at module level.
+    # Divided by 100 to convert a percentage to a probability.
+    probability_of_default = question_2(df_scheduled, df_balances) / 100
+
+    recovery_rate = 0.8
+
+    total_loss = float(probability_of_default * total_loan_balance * (1 - recovery_rate))
 
     return total_loss
