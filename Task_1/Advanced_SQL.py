@@ -156,7 +156,7 @@ def question_4():
     -- zone located in the TimeZone column. Each timestamp is therefore
     -- interpreted in its own zone and converted to Europe/London before filtering.
     -- IANA zone names are used such that daylight saving is applied correctly
-    -- The ICU extension is installed and loaded, it is required for named zones.
+    -- The ICU extension is loaded, it is required for named zones.
     --
     -- Assumptions: CST, IST and PNT are a bit ambiguous. They are read as
     -- US Central, Israel Standard Time, and US Mountain
