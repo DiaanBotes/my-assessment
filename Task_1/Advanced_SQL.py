@@ -344,6 +344,53 @@ def question_7():
     Return columns: `CustomerID`, `Age`, `CorrectedAge`, `Gender`, `AgeCategory`, `Rank`
     """
 
-    qry = """____________________"""
+    qry = """
+
+    -- Two CTEs are needed because AgeCategory must exist as a column before it can
+    -- be used as the partition key of the window function.
+    --
+    -- The LEFT JOIN with COALESCE keeps customers who made no repayments, counting
+    -- them as 0 so they are ranked last rather than dropped.
+    --
+    -- DENSE_RANK is used rather than RANK so that tied customers do not create gaps
+    -- in the sequence (1,2,2,3 not 1,2,2,4). Ranking is descending, so the customer
+    -- with the most repayments in each age group is ranked 1.
+
+    WITH repayment_counts AS (
+        SELECT CustomerID, COUNT(*) AS NumberOfRepayments
+        FROM repayments
+        GROUP BY CustomerID
+    ),
+    categorised AS (
+        SELECT
+            cc.CustomerID,
+            cc.Age,
+            cc.CorrectedAge,
+            cc.Gender,
+            COALESCE(rc.NumberOfRepayments, 0) AS NumberOfRepayments,
+            CASE
+                WHEN cc.CorrectedAge < 20 THEN 'Teen'
+                WHEN cc.CorrectedAge < 30 THEN 'Young Adult'
+                WHEN cc.CorrectedAge < 60 THEN 'Adult'
+                ELSE 'Pensioner'
+            END AS AgeCategory
+        FROM corrected_customers AS cc
+        LEFT JOIN repayment_counts AS rc
+            ON cc.CustomerID = rc.CustomerID
+    )
+    SELECT
+        CustomerID,
+        Age,
+        CorrectedAge,
+        Gender,
+        AgeCategory,
+        DENSE_RANK() OVER (
+            PARTITION BY AgeCategory
+            ORDER BY NumberOfRepayments DESC
+        ) AS Rank
+    FROM categorised
+    ORDER BY AgeCategory, Rank, CustomerID;
+
+    """
 
     return qry
