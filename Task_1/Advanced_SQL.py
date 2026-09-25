@@ -167,7 +167,7 @@ def question_4():
     -- Such that months with no repayments are showed and filled with 0 by COALESCE. 
     -- Finally This produces 1000 customers x 12 months = 12,000 rows.
 
-    INSTALL icu; LOAD icu;
+    LOAD icu;
 
     CREATE TABLE timeline (
         CustomerID INT,
