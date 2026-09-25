@@ -49,7 +49,7 @@ def question_2():
 
     qry = """
     
-    -- Filtering to female customers. LOWER and LIKE 'fem%' gaurd against inconsistencies in the column
+    -- Filtering to female customers. LOWER and LIKE 'fem%' guard against inconsistencies in the column
     -- Distinct removes duplicate customers 
     
     SELECT DISTINCT Name, Surname, Income
@@ -96,7 +96,7 @@ def question_4():
 
     qry = """
 
-    -- Count the customers per CustomerClass, the duplicates are removed in the subclass, same as in the previous question. 
+    -- Count the customers per CustomerClass, the duplicates are removed in the subquery, same as in the previous question. 
 
     SELECT CustomerClass, COUNT(*) AS Count
     FROM (

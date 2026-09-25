@@ -101,7 +101,7 @@ def question_3():
 
     -- Chose these data types since they match the columns in tables customers, loans and credit
     -- Removing all of the duplicate rows with 3 CTE's after the Insert but before Select
-    -- Uses 3 joins to join all 3 tables on CustomerID together
+    -- Uses 2 joins to join all 3 tables on CustomerID together
 
     CREATE TABLE financing (
         CustomerID INT,
@@ -356,6 +356,7 @@ def question_7():
     -- in the sequence (1,2,2,3 not 1,2,2,4). Ranking is descending, so the customer
     -- with the most repayments in each age group is ranked 1.
 
+    CREATE OR REPLACE TABLE corrected_customers AS 
     WITH repayment_counts AS (
         SELECT CustomerID, COUNT(*) AS NumberOfRepayments
         FROM repayments
@@ -390,6 +391,8 @@ def question_7():
         ) AS Rank
     FROM categorised
     ORDER BY AgeCategory, Rank, CustomerID;
+
+    SELECT * FROM corrected_customers;
 
     """
 
